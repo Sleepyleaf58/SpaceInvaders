@@ -28,6 +28,7 @@ playerImg = pygame.image.load("spaceship.png")
 playerX = 368
 playerY = 480
 playerX_change = 0
+playerY_change = 0
 
 # Enemy
 enemyImg = []
@@ -54,6 +55,9 @@ bulletY = 480
 bulletX_change = 0
 bulletY_change = 11
 bullet_state = "ready"
+
+# Home Planet
+home_planetImg = pygame.image.load("HomePlanet.png")
 
 #Replay
 
@@ -122,6 +126,7 @@ while running:
 
     # background image
     screen.blit(background,(0, 0))
+    screen.blit(home_planetImg, (0, 480))
 
     for event in pygame.event.get():
         # Closes window
@@ -135,18 +140,27 @@ while running:
                 playerX_change = -5
             if event.key == pygame.K_RIGHT:
                 playerX_change = +5
+
+            if event.key == pygame.K_UP:
+                playerY_change = -5
+            if event.key == pygame.K_DOWN:
+                playerY_change = +5
+
             if event.key == pygame.K_SPACE:
                 if bullet_state == "ready":
                     bullet_sound = mixer.Sound("laser.wav")
                     bullet_sound.set_volume(0.2)
                     bullet_sound.play()
                     bulletX = playerX
-                    fire_bullet(playerX, bulletY)
+                    bulletY = playerY
+                    fire_bullet(bulletX, bulletY)
 
         #Key Up 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                playerY_change = 0
 
         #Play Again
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -162,17 +176,22 @@ while running:
 
     # player boundaries
     playerX += playerX_change
+    playerY += playerY_change
 
     if playerX <= 0:
         playerX = 0
     if playerX >= 736:
         playerX = 736
+    if playerY <= 0:
+        playerY = 0
+    if playerY >= 532:
+        playerY = 532
 
     # enemy movement
     for i in range(num_of_enemies):
 
         # Game Over
-        if enemyY[i] > 440:
+        if enemyY[i] > 450:
             for j in range(num_of_enemies):
                 enemyY[j] = 2000
             game_state = "gameover"
